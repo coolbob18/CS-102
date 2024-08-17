@@ -1,0 +1,140 @@
+import java.util.Random;
+import java.util.Scanner;
+
+import DSAndAlgos.LinkedOrderList;
+public class OrderedListMerger {
+	
+	    private LinkedOrderList<String> list1;
+	    private LinkedOrderList<String> list2;
+
+	    public OrderedListMerger() {
+	        list1 = new LinkedOrderList<>();
+	        list2 = new LinkedOrderList<>();
+	    }
+
+	    public void addInfo() {
+	        Scanner scanner = new Scanner(System.in);
+	        Random random = new Random();
+
+	        System.out.println("Enter a name (leave blank to merge)");
+	        String input = scanner.nextLine();
+
+	        while (!input.isEmpty()) {
+	            if (random.nextBoolean()) {
+	                list1.add(input);
+	            } else {
+	                list2.add(input);
+	            }
+	            System.out.println("Enter a name (leave blank merge)");
+	            input = scanner.nextLine().trim();
+	        }
+	    }
+
+	    public void mergeLists() {
+	        while (!list1.isEmpty() && !list2.isEmpty()) {
+	            String first1 = list1.iterator().next();
+	            String first2 = list2.iterator().next();
+
+	            if (first1.compareTo(first2) < 0) {
+	                System.out.print(list1.remove(first1) + " ");
+	            } else {
+	                System.out.print(list2.remove(first2) + " ");
+	            }
+	        }
+
+	        while (!list1.isEmpty()) {
+	        	String first11 = list1.iterator().next();
+	            System.out.print(list1.remove(first11) + " ");
+	        }
+
+	        while (!list2.isEmpty()) {
+	        	String first22 = list2.iterator().next();
+	            System.out.print(list2.remove(first22) + " ");
+	        }
+	    }
+	    public static void main(String[] args) {
+	    	OrderedListMerger list = new OrderedListMerger();
+	        list.addInfo();
+	        list.mergeLists();
+	    }
+	}
+
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class OrganDonation {
+	public static void main(String[] args) {
+		
+		Scanner scanner = new Scanner(System.in);
+		ArrayList<Organ> neededOrgans = new ArrayList<>();
+		ArrayList<Organ> donatedOrgans = new ArrayList<>();
+
+		while (true) {
+			System.out.println("1. register organ needed");
+			System.out.println("2. register organ donated");
+			System.out.println("3. exit");
+			System.out.println("----------------------------");
+			System.out.print("select 1, 2, 3 ");
+
+			String choice = scanner.nextLine();
+			switch (choice) {
+			case "1":
+				System.out.print("for who ");
+				String person = scanner.nextLine();
+				System.out.print("what organ ");
+				String organNeeded = scanner.nextLine();
+				neededOrgans.add(new Organ(person, organNeeded));
+				checkForMatch(neededOrgans, donatedOrgans);
+				break;
+			case "2":
+				System.out.print("by who ");
+				String donor = scanner.nextLine();
+				System.out.print("what organ ");
+				String organDonated = scanner.nextLine();
+				donatedOrgans.add(new Organ(donor, organDonated));
+				checkForMatch(neededOrgans, donatedOrgans);
+				break;
+			case "3":
+				System.out.println("bye bye");
+				scanner.close();
+				System.exit(0);
+			default:
+				System.out.println("try again your three choices are 1, 2, and 3. If you are struggling to enter a number than maybe you should not donate an organ and get your eye checked.");
+			}
+		}
+	}
+
+	private static void checkForMatch(ArrayList<Organ> neededOrgans, ArrayList<Organ> donatedOrgans) {
+		for (Organ neededOrgan : neededOrgans) {
+			for (Organ donatedOrgan : donatedOrgans) {
+				if (neededOrgan.getOrgan().equalsIgnoreCase(donatedOrgan.getOrgan())) {
+					System.out.println(donatedOrgan.getPerson() + "'s " + donatedOrgan.getOrgan() + " was given to "
+							+ neededOrgan.getPerson() + ".");
+					neededOrgans.remove(neededOrgan);
+					donatedOrgans.remove(donatedOrgan);
+					return;
+				}
+			}
+		}
+	}
+	
+	class Organ {
+	    private String person;
+	    private String organ;
+
+	    public Organ(String person, String organ) {
+	        this.person = person;
+	        this.organ = organ;
+	    }
+
+	    public String getPerson() {
+	        return person;
+	    }
+
+	    public String getOrgan() {
+	        return organ;
+	    }
+	}
+	
+}
