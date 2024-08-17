@@ -1,0 +1,132 @@
+import java.util.Scanner;
+
+import DSAndAlgos.ArrayStack;
+import DSAndAlgos.IStack;
+
+public class PostfixEvaluator 
+{
+	public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("enter a postfix ");
+        String expression = scanner.nextLine();
+
+        double result = evaluatePostfix(expression);
+        System.out.println("Result: " + result);
+        
+        scanner.close();
+    }
+
+    public static double evaluatePostfix(String thing) {
+		IStack<Integer> stack = new ArrayStack<Integer>(thing.length());
+        for (int i = 0; i < thing.length(); i++) {
+            char t = thing.charAt(i);
+            if (Character.isDigit(t)) {
+            	int s = t - '0';
+                stack.push(s);
+            } else {
+                int o2 = stack.pop() - '0'; 
+                int o1 = stack.pop() - '0'; 
+                int result = mathPart(t, o1, o2);
+                stack.push((int)result); 
+            }
+        }
+        return stack.pop(); 
+    }
+
+    public static int mathPart(char o, int o1, int o2) {
+        switch (o) {
+            case '+':
+                return o1 + o2;
+            case '-':
+                return o1 - o2;
+            case '*':
+                return o1 * o2;
+            case '/':
+                if (o2 == 0) {
+                    throw new ArithmeticException("division by zero");
+                }
+                return o1 / o2;
+            default:
+                throw new IllegalArgumentException("not working");
+        }
+    }
+	
+}
+
+import java.util.Scanner;
+
+import DSAndAlgos.IStack;
+import DSAndAlgos.LinkedStack;
+
+public class PostfixToInfixTranslator 
+{
+	public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("enter a postfix expression ");
+        String postfixExpression = scanner.nextLine();
+
+        String infixExpression = convertPostfixToInfix(postfixExpression);
+        System.out.println("Infix expression: " + infixExpression);
+        
+        scanner.close();
+    }
+
+    public static String convertPostfixToInfix(String postfixExpression) {
+        IStack<String> stack = new LinkedStack<String>();
+        String[] string = postfixExpression.split("\\s+");
+        for (String s2 : string) {
+            if (check(s2)) {
+                stack.push(s2);
+            } else {
+                String o2 = stack.pop();
+                String o1 = stack.pop();
+                String infix = "(" + o1 + " " + s2 + " " + o2 + ")";
+                stack.push(infix);
+            }
+        }
+        return stack.pop();
+    }
+
+    public static boolean check(String str) {
+        return str.matches("[a-zA-Z0-9]+");
+    }
+	
+}
+
+import java.util.Scanner;
+
+import DSAndAlgos.IStack;
+import DSAndAlgos.LinkedStack;
+public class SentenceWordReverser {
+	public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("enter a sentence ");
+        String sentence = scanner.nextLine();
+
+        System.out.println("words with reversed letters");
+        String[] words = sentence.split("\\s+");
+        for (String word : words) {
+            IStack<String> stack = new LinkedStack<String>();
+            for (char c : word.toCharArray()) {
+            	String s = Character.toString(c);
+                stack.push(s);
+            }
+            while (!stack.isEmpty()) {
+                System.out.print(stack.pop());
+            }
+            System.out.print(" ");
+        }
+        System.out.println();
+
+        System.out.println("words in reverse order");
+        for (int i = words.length - 1; i >= 0; i--) {
+            System.out.print(words[i] + " ");
+        }
+        System.out.println();
+        scanner.close();
+    }
+	
+}
