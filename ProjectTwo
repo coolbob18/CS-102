@@ -1,0 +1,194 @@
+import java.util.Random;
+import java.util.Scanner;
+import DSAndAlgos.LinkedQueue;
+
+public class IntersectionLaneSimulator {
+	
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+
+        System.out.print("enter the duration for the simulation: ");
+        int simulationDuration = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("enter the duration of the green light: ");
+        int greenLightDuration = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("enter the duration of the red light: ");
+        int redLightDuration = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("enter the rate of cars arriving: ");
+        int carArrivalRate = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("enter the rate of cars passing through: ");
+        int carPassRate = Integer.parseInt(scanner.nextLine());
+
+        LinkedQueue<Integer> laneQueue = new LinkedQueue<>();
+        int timeElapsed = 0;
+        int carsInLane = 0;
+        boolean isGreenLight = false;
+
+        while (timeElapsed <= simulationDuration) {
+        	
+        	if (timeElapsed % (greenLightDuration + redLightDuration) == 0) {
+                isGreenLight = false;
+                System.out.println("[" + timeElapsed + "] The light has turned from red to green.");
+			} else if (timeElapsed % (greenLightDuration + redLightDuration) == greenLightDuration) {
+                isGreenLight = true;
+                System.out.println("[" + timeElapsed + "] The light has turned from green to red.");
+            }
+
+            if (random.nextDouble() < (double) carArrivalRate / 60) {
+                laneQueue.enqueue(timeElapsed);
+                System.out.println("[" + timeElapsed + "] A car has arrived.");
+                carsInLane++;
+            }
+
+            if (isGreenLight && !laneQueue.isEmpty()) {
+                if (random.nextDouble() < (double) carPassRate / 60) {
+                    laneQueue.dequeue();
+                    System.out.println("[" + timeElapsed + "] A car has passed through the intersection.");
+                    carsInLane--;
+                }
+            }
+            timeElapsed++;
+            if (timeElapsed == simulationDuration) {
+                System.out.println("[Finished] " + carsInLane + " cars are currently in the lane.");
+            }
+        }
+        scanner.close();
+    }
+
+}
+
+
+import java.util.Scanner;
+import DSAndAlgos.ArrayQueue;
+
+public class KidneyDonation {
+	
+    public static void main(String[] args) {
+        ArrayQueue<String> neededQueue = new ArrayQueue<>(10);
+        ArrayQueue<String> donatedQueue = new ArrayQueue<>(10);
+        Scanner scanner = new Scanner(System.in);
+        
+        while (true) {
+            System.out.println("1.) register kidney needed.");
+            System.out.println("2.) register kidney donated.");
+            System.out.println("3.) exit");
+            System.out.println("----------------------------");
+            System.out.print("select 1, 2 or 3: ");
+            
+            String input = scanner.nextLine();
+            
+            switch (input) {
+                case "1":
+                    System.out.print("For who? ");
+                    String needed = scanner.nextLine();
+                    neededQueue.enqueue(needed);
+                    break;
+                case "2":
+                    System.out.print("By who? ");
+                    String donated = scanner.nextLine();
+                    if (!neededQueue.isEmpty()) {
+                        String givenTo = neededQueue.dequeue();
+                        System.out.println(donated + " kidney was given to " + givenTo + ".");
+                    } else {
+                        donatedQueue.enqueue(donated);
+                    }
+                    break;
+                case "3":
+                    System.out.println("Goodbye!");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid selection. Please try again.");
+            }
+        }
+    }
+
+}
+
+
+import java.util.Scanner;
+
+import DSAndAlgos.LinkedQueue;
+
+public class RepeatingKeyCipher {
+	public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        LinkedQueue<Integer> keyQueue = new LinkedQueue<>();
+        boolean exit = false;
+
+        while (!exit) {
+            System.out.println("1.) encode a message.");
+            System.out.println("2.) decode a message.");
+            System.out.println("3.) exit");
+            System.out.println("----------------------------");
+            System.out.print("select 1, 2 or 3: ");
+
+            String input = scanner.nextLine().trim();
+
+            switch (input) {
+                case "1":
+                    System.out.print("enter the key: ");
+                    String keyInput = scanner.nextLine().trim();
+                    parseKey(keyInput, keyQueue);
+                    System.out.print("enter the message: ");
+                    String messageToEncode = scanner.nextLine().trim();
+                    String encodedMessage = encode(messageToEncode, keyQueue);
+                    System.out.println("encoded message: " + encodedMessage);
+                    break;
+                case "2":
+                    System.out.print("enter the key: ");
+                    keyInput = scanner.nextLine().trim();
+                    parseKey(keyInput, keyQueue);
+                    System.out.print("enter the message: ");
+                    String messageToDecode = scanner.nextLine().trim();
+                    String decodedMessage = decode(messageToDecode, keyQueue);
+                    System.out.println("decoded message: " + decodedMessage);
+                    break;
+                case "3":
+                    System.out.println("goodbye");
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("invalid selection");
+            }
+        }
+        scanner.close();
+    }
+
+    private static void parseKey(String keyInput, LinkedQueue<Integer> keyQueue) {
+        String[] keyValues = keyInput.split(" ");
+        for (String keyValue : keyValues) {
+            try {
+                int key = Integer.parseInt(keyValue);
+                keyQueue.enqueue(key);
+            } catch (NumberFormatException e) {
+                System.out.println("invalid key format");
+                break;
+            }
+        }
+    }
+
+    private static String encode(String message, LinkedQueue<Integer> keyQueue) {
+        StringBuilder encodedMessage = new StringBuilder();
+        for (char c : message.toCharArray()) {
+            int key = keyQueue.dequeue();
+            keyQueue.enqueue(key);
+            encodedMessage.append((char) (c + key));
+        }
+        return encodedMessage.toString();
+    }
+
+    private static String decode(String message, LinkedQueue<Integer> keyQueue) {
+        StringBuilder decodedMessage = new StringBuilder();
+        for (char c : message.toCharArray()) {
+            int key = keyQueue.dequeue();
+            keyQueue.enqueue(key); 
+            decodedMessage.append((char) (c - key));
+        }
+        return decodedMessage.toString();
+    }
+}
